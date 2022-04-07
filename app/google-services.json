@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "87368726792",
+    "firebase_url": "https://puffstore-c0fba-default-rtdb.firebaseio.com",
+    "project_id": "puffstore-c0fba",
+    "storage_bucket": "puffstore-c0fba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87368726792:android:ad85d541851174042dd4bd",
+        "android_client_info": {
+          "package_name": "com.example.puffstore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "87368726792-noorpie3kmmqdo1tvrctdhd1199qs8sm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4-HwiTP3qu7pMjc2OBIaoATX7VqJOm8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "87368726792-noorpie3kmmqdo1tvrctdhd1199qs8sm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
