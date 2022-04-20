@@ -1,5 +1,6 @@
 package com.example.puffstore.View
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
@@ -9,18 +10,39 @@ import com.example.puffstore.R
 import com.example.puffstore.ViewModel.CartLoadListener
 import com.example.puffstore.ViewModel.MenuAdapter
 import com.example.puffstore.ViewModel.MenuLoadListener
+import com.example.puffstore.ViewModel.UpdateCart
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : AppCompatActivity(), MenuLoadListener, CartLoadListener {
 
     lateinit var menuLoadListener: MenuLoadListener
     lateinit var cartLoadListener: CartLoadListener
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if(EventBus.getDefault().hasSubscriberForEvent(UpdateCart::class.java))
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
+
+    fun onUpdateCartEvent(event: UpdateCart){
+        countCartFirebase()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,11 +57,16 @@ class MainActivity : AppCompatActivity(), MenuLoadListener, CartLoadListener {
         FirebaseDatabase.getInstance().getReference("Cart").child("UNIQUE_USER_ID")
             .addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
+                    for(cartSnapshot in snapshot.children){
+                        val cartModel = cartSnapshot.getValue(CartModel::class.java)
+                        cartModel!!.key = cartSnapshot.key
+                        cartModels.add(cartModel)
+                    }
+                    cartLoadListener.onLoadCart(cartModels)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    cartLoadListener.onLoadCartFailed(error.message)
                 }
 
             })
@@ -47,7 +74,8 @@ class MainActivity : AppCompatActivity(), MenuLoadListener, CartLoadListener {
 
     private fun loadMenuFromFirebase() {
         val menuModelsFirebase: MutableList<MenuModel> = ArrayList()
-        FirebaseDatabase.getInstance().getReference("Menu").addListenerForSingleValueEvent(object: ValueEventListener{
+        FirebaseDatabase.getInstance().getReference("Menu")
+            .addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     for(menuSnapshot in snapshot.children){
@@ -75,6 +103,10 @@ class MainActivity : AppCompatActivity(), MenuLoadListener, CartLoadListener {
         val gridLayoutManager = GridLayoutManager(this, 2)
         menuRecycler.layoutManager = gridLayoutManager
         menuRecycler.addItemDecoration(ItemSpacing())
+
+        cartButton.setOnClickListener(){
+            startActivity(Intent(this, CartActivity::class.java))
+        }
 
 
     }

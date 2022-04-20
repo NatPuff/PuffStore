@@ -65,7 +65,7 @@ class MenuAdapter(
     }
 
     private fun addToCart(menuModel: MenuModel){
-        val userCart = FirebaseDatabase.getInstance().getReference("Cart").child("UNIQUE_USER_ID")
+        val userCart = FirebaseDatabase.getInstance().getReference("Menu")
 
         userCart.child(menuModel.key!!)
             .addListenerForSingleValueEvent(object: ValueEventListener {
@@ -73,7 +73,6 @@ class MenuAdapter(
                     if(snapshot.exists()){
                         val cartModel = snapshot.getValue(CartModel::class.java)
                         val updateData: MutableMap<String, Any> = HashMap()
-                        updateData["quantity"]  =cartModel!!.quantity
                         updateData["quantity"]  =cartModel!!.quantity
                         updateData["quantity"]  =cartModel!!.quantity * cartModel.price!!.toFloat()
 
